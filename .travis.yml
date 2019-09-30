@@ -1,0 +1,36 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t summitaccess/complex -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true summitaccess/complex npm run test
+
+after_success:
+  - docker build -t summitaccess/complex-client ./client
+  - docker build -t summitaccess/complex-nginx ./nginx
+  - docker build -t summitaccess/complex-server ./server
+  - docker build -t summitaccess/complex-worker ./worker
+  # Log into docker cli and push to docker hub
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push summitaccess/complex-client
+  - docker push summitaccess/complex-nginx
+  - docker push summitaccess/complex-server
+  - docker push summitaccess/complex-worker
+
+#deploy:
+#  provider: elasticbeanstalk
+#  region: "us-west-2"
+#  app: "docker-react"
+#  env: "DockerReact-env"
+#  bucket_name: "elasticbeanstalk-us-west-2-877073253290"
+#  bucket_path: "docker-react"
+#  on:
+#    branch: master
+#  access_key_id:
+#    secure: $AWS_ACCESS_KEY
+#  secret_access_key:
+#    secure: "$AWS_SECRET_KEY" # These are in Travis Env Vars
