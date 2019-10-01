@@ -1,0 +1,40 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "client",
+      "image": "summitaccess/complex-client",
+      "hostname": "client",
+      "memory": 128,
+      "essential": false
+    },
+    {
+      "name": "server",
+      "image": "summitaccess/complex-server",
+      "hostname": "api",
+      "memory": 128,
+      "essential": false
+    },
+    {
+      "name": "worker",
+      "image": "summitaccess/complex-worker",
+      "hostname": "worker",
+      "memory": 128,
+      "essential": false
+    },
+    {
+      "name": "nginx",
+      "image": "summitaccess/complex-nginx",
+      "hostname": "nginx",
+      "memory": 128,
+      "essential": true,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ],
+      "links": ["client", "server"]
+    }
+  ]
+}
